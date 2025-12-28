@@ -1,0 +1,19 @@
+name: email-sort-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - jupyterlab
+  - ipykernel
+  - numpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - scipy
+  - statsmodels
+  - pip
+  - pip:
+      - jupyterlab-code-formatter
+      - black
+  

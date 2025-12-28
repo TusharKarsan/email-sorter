@@ -1,0 +1,80 @@
+# -----------------------------
+# Python
+# -----------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+*.log
+
+# Virtual environments (just in case)
+.env/
+.venv/
+venv/
+env/
+
+# -----------------------------
+# Jupyter Notebooks
+# -----------------------------
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Notebook metadata noise
+*.nbconvert.ipynb
+
+# -----------------------------
+# VS Code
+# -----------------------------
+.vscode/
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# -----------------------------
+# Data (keep raw data out of Git)
+# -----------------------------
+data/raw/
+data/interim/
+data/processed/
+data/external/
+
+# Allow small sample datasets
+!data/*.csv
+!data/*.tsv
+
+# -----------------------------
+# Conda / Environment
+# -----------------------------
+# Never commit conda environment folders
+conda-meta/
+pkgs/
+
+# Allow environment.yml (important)
+!environment.yml
+
+# -----------------------------
+# OS-specific
+# -----------------------------
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# -----------------------------
+# Logs / temp files
+# -----------------------------
+*.tmp
+*.temp
+*.cache/
+.cache/
+logs/
