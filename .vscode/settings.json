@@ -1,0 +1,23 @@
+{
+  "python.defaultInterpreterPath": "C:\\Users\\Tusha\\miniforge3\\envs\\email-sort-env\\python.exe",
+  "python.terminal.activateEnvironment": true,
+
+  "jupyter.jupyterServerType": "local",
+  "jupyter.askForKernelRestart": false,
+  "jupyter.notebookFileRoot": "${workspaceFolder}/notebooks",
+
+  "python.analysis.typeCheckingMode": "basic",
+  "python.formatting.provider": "black",
+  "editor.formatOnSave": true,
+  "notebook.formatOnSave.enabled": true,
+
+  "files.exclude": {
+    "**/.ipynb_checkpoints": true,
+    "**/__pycache__": true
+  },
+  "search.exclude": {
+    "**/.ipynb_checkpoints": true,
+    "**/__pycache__": true
+  },
+  "jupyter.interactiveWindow.creationMode": "perFile"
+}

@@ -29,6 +29,7 @@ env/
 # VS Code
 # -----------------------------
 .vscode/
+!.vscode/
 !.vscode/settings.json
 !.vscode/launch.json
 !.vscode/tasks.json
