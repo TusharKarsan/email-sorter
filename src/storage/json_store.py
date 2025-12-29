@@ -10,27 +10,26 @@ Responsibilities:
 
 import json
 import os
+from datetime import datetime
+from typing import Dict, Any
 
-def store_email(email, classification_result):
-    """
-    Persist processed email and classification result to disk.
+def store_email_classification(result: Dict[str, Any]) -> None:
+    """Store email classification result to JSON file organized by date."""
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    directory = f"storage/{date_str}"
+    os.makedirs(directory, exist_ok=True)
 
-    :param email: The processed email data
-    :type email: dict
-    :param classification_result: The classification result
-    :type classification_result: dict
-    """
-    # Extract date from email
-    date = email['date']
+    file_path = f"{directory}/email_classification.json"
 
-    # Create directory if it doesn't exist
-    dir_path = os.path.join('storage', date)
-    os.makedirs(dir_path, exist_ok=True)
+    # Read existing data if file exists
+    existing_data = []
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            existing_data = json.load(f)
 
-    # Construct file path
-    file_path = os.path.join(dir_path, f'{email["id"]}.json')
+    # Append new result
+    existing_data.append(result)
 
-    # Save JSON data to file
+    # Write back to file
     with open(file_path, 'w') as f:
-        json.dump(classification_result, f)
-
+        json.dump(existing_data, f, indent=2)

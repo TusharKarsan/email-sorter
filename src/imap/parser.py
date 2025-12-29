@@ -7,25 +7,39 @@ Responsibilities:
 - Return normalised dict
 """
 
+import email
 import re
-from email.parser import Parser
+from email.header import decode_header
+from email.utils import parsedate_to_datetime
 
-def parse_imap_message(message_bytes):
-    """
-    Parse an IMAP message and return a normalised dictionary.
+def parse_rfc822(data):
+    msg = email.message_from_bytes(data)
 
-    :param message_bytes: bytes representing the IMAP message
-    :return: dictionary containing parsed data
-    """
-    # Parse RFC822 bytes into Message object
-    parser = Parser()
-    message = parser.parsebytes(message_bytes)
+    def decode_header_value(value):
+        if not value:
+            return ""
+        decoded_parts = decode_header(value)
+        return ''.join(
+            part.decode(encoding or 'utf-8') if isinstance(part, bytes) else part
+            for part, encoding in decoded_parts
+        )
 
-    # Extract relevant fields from Message object
-    result = {
-        'from': re.sub(r'<[^>]*>', '', str(message['from'])),
-        'subject': message.get('subject', ''),
-        'date': message.get('date', '')
+    def get_text_content():
+        text_content = ""
+        for part in msg.walk():
+            content_type = part.get_content_type()
+            if content_type == "text/plain":
+                text_content = part.get_payload(decode=True).decode('utf-8', errors='ignore')
+                break
+            elif content_type == "text/html":
+                html_content = part.get_payload(decode=True).decode('utf-8', errors='ignore')
+                # Strip HTML tags
+                text_content = re.sub(r'<[^>]+>', '', html_content)
+        return text_content
+
+    return {
+        "from": decode_header_value(msg.get("From", "")),
+        "subject": decode_header_value(msg.get("Subject", "")),
+        "date": parsedate_to_datetime(msg.get("Date", "")).isoformat() if msg.get("Date") else None,
+        "body": get_text_content()
     }
-
-    return result

@@ -6,40 +6,24 @@ Responsibilities:
 - Instruct the model to return STRICT JSON only
 - Avoid any application logic or API calls
 - Prompt should be deterministic and concise
+- Only return a prompt string; do not implement classification or parsing
 """
 
-from typing import List
+def get_classification_prompt():
+    return """Classify the following text into one of these categories only:
+- 'technology'
+- 'health'
+- 'finance'
+- 'education'
+- 'entertainment'
+- 'sports'
+- 'politics'
+- 'science'
+- 'business'
+- 'travel'
 
+Return ONLY a valid JSON object with the key 'category' and the value being the selected category from the list above.
+Example:
+{"category": "technology"}
 
-class PromptConfig:
-    """
-    Configuration for classification prompts.
-    """
-
-    def __init__(self, allowed_categories: List[str]):
-        self.allowed_categories = allowed_categories
-
-
-def build_classification_prompt(text: str, prompt_config: PromptConfig) -> str:
-    """
-    Build the classification prompt used by the LLM.
-
-    Responsibilities:
-    - Enumerate allowed categories explicitly
-    - Instruct the model to return STRICT JSON only
-    - Be deterministic and concise
-    """
-
-    categories = ", ".join(prompt_config.allowed_categories)
-
-    prompt = (
-        "You are an email classifier.\n\n"
-        f"Allowed categories: {categories}\n\n"
-        "Classify the email content below into exactly one of the allowed categories.\n"
-        "Return ONLY valid JSON in the following format:\n"
-        '{ "category": "<one category>", "confidence": <number between 0 and 1> }\n\n'
-        "Email content:\n"
-        f"{text}"
-    )
-
-    return prompt
+Text: {text}"""

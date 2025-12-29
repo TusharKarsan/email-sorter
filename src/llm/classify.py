@@ -4,55 +4,44 @@ Responsibilities:
 - Send email content to Ollama
 - Enforce structured JSON response
 - Return category, confidence, rationale
+- Call get_classification_prompt() defined in @file prompts.py and return JSON string
+- No prompt construction here
 """
 
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+import json
+import subprocess
+import sys
 
-def classify_email_content(email_content):
-    # Send email content to Ollama
-    msg = MIMEMultipart()
-    msg['From'] = 'your-email@gmail.com'
-    msg['To'] = 'ollama@ollama.ai'
-    msg['Subject'] = 'Email Content Classification'
-    body = email_content
-    msg.attach(MIMEText(body, 'plain'))
-
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(msg['From'], 'your-password')
-    text = msg.as_string()
-    server.sendmail(msg['From'], msg['To'], text)
-    server.quit()
-    # Enforce structured JSON response
-    import json
-
+def classify_email(email_content: str) -> str:
     try:
-        # Simulate a classification API call
-        category = "Business"
-        confidence = 0.8
-        rationale = "Keywords: 'meeting', 'schedule'"
+        # Get the prompt from prompts.py
+        from prompts import get_classification_prompt
+        prompt = get_classification_prompt(email_content)
 
-        result = {
-            "category": category,
-            "confidence": float(confidence),
-            "rationale": rationale
-        }
+        # Prepare the Ollama command
+        cmd = [
+            "ollama", "run", "llama3",
+            prompt
+        ]
 
-        return json.dumps(result, indent=4)
+        # Run the command and capture output
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+
+        if result.returncode != 0:
+            raise Exception(f"Ollama error: {result.stderr}")
+
+        # Parse the JSON response
+        response = result.stdout.strip()
+        parsed = json.loads(response)
+
+        # Return the structured response
+        return json.dumps(parsed, indent=2)
 
     except Exception as e:
-        return {"error": str(e)}
-
-# Example usage
-if __name__ == "__main__":
-    email_content = """
-    Dear team,
-
-    Please find the meeting schedule attached.
-
-    Best regards,
-    [Your Name]
-    """
-    print(classify_email_content(email_content))
+        # Re-raise any exception as a generic error
+        raise Exception(f"Classification failed: {str(e)}")
