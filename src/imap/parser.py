@@ -7,6 +7,7 @@ Responsibilities:
 - Return normalised dict
 """
 
+from bs4 import BeautifulSoup
 import email
 import re
 from email.header import decode_header
@@ -24,29 +25,41 @@ def parse_rfc822(data):
             for part, encoding in decoded_parts
         )
 
+    def decode_payload(part) -> str:
+        payload = part.get_payload(decode=True)
+        if not payload:
+            return ""
+
+        assert isinstance(payload, bytes)
+
+        charset = part.get_content_charset() or "utf-8"
+
+        try:
+            return payload.decode(charset, errors="replace")
+        except LookupError:
+            # Unknown charset declared
+            return payload.decode("utf-8", errors="replace")
+
     def get_text_content():
         text_content = ""
 
         for part in msg.walk():
             content_type = part.get_content_type()
-            payload = part.get_payload(decode=True)
-
-            if not payload:
-                continue
-
-            assert isinstance(payload, bytes)
 
             if content_type == "text/plain":
-                text_content = payload.decode("utf-8", errors="ignore")
-                break
+                text_content = decode_payload(part)
+                if text_content:
+                    break
 
-            elif content_type == "text/html":
-                html_content = payload.decode("utf-8", errors="ignore")
-                text_content = re.sub(r"<[^>]+>", "", html_content)
+            elif content_type == "text/html" and not text_content:
+                html_content = decode_payload(part)
+                # Parse HTML using BeautifulSoup with lxml parser
+                soup = BeautifulSoup(html_content, "lxml")
+                # Extract visible text with line breaks
+                text_content = soup.get_text(separator="\n", strip=True)
 
         return text_content
         
-
     return {
         "from": decode_header_value(msg.get("From", "")),
         "subject": decode_header_value(msg.get("Subject", "")),
