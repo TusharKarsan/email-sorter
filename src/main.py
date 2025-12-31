@@ -1,3 +1,4 @@
+# main.py
 """
 Main entry point for the email sorter.
 
@@ -8,6 +9,12 @@ Pipeline:
 4. Classify each email via Ollama (sync)
 5. Store classification result
 6. Print visible progress/output
+
+See also:
+- src.imap.client.fetch_all_unread_emails
+- src.imap.parser.parse_rfc822
+- src.llm.classify.classify_email
+- src.storage.json_store.store_email_classification
 """
 
 import os
