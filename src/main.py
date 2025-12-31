@@ -1,29 +1,81 @@
-# main.py 
 """
-Responsibilities:
-- Orchestrate the end-to-end flow for a single email
-- Call IMAP client, parser, classifier, and storage in order
-- Contain no domain logic of its own
-- Act as the executable entry point
-- Fail fast and log clearly
-- Only orchestrate existing functions only, no new logic
+Main entry point for the email sorter.
+
+Pipeline:
+1. Connect to IMAP
+2. Fetch unread emails
+3. Parse RFC822
+4. Classify each email via Ollama (sync)
+5. Store classification result
+6. Print visible progress/output
 """
 
-from imap.client import fetch_unread_email
-from imap.parser import parse_rfc822
-from llm.classify import classify_email
-from storage.json_store import store_email_classification
+import os
+from dotenv import load_dotenv
 
-def process_single_email(host, port, username, password):
-    """Orchestrates the full email processing pipeline."""
-    raw_email = fetch_unread_email(host, port, username, password)
-    if raw_email is None:
+from src.imap.client import fetch_all_unread_emails
+from src.imap.parser import parse_rfc822
+from src.llm.classify import classify_email
+from src.storage.json_store import store_email_classification
+
+
+def process_all_emails():
+    load_dotenv()
+
+    host = os.environ.get("EMAIL_HOST")
+    port = int(os.environ.get("EMAIL_PORT", 993))
+    username = os.environ.get("EMAIL_USER")
+    password = os.environ.get("EMAIL_PASS")
+
+    if not all([host, username, password]):
+        raise RuntimeError(
+            "Missing EMAIL_HOST / EMAIL_USER / EMAIL_PASS in environment"
+        )
+
+    print("Connecting to IMAP...")
+    raw_emails = fetch_all_unread_emails(host, port, username, password)
+
+    if not raw_emails:
+        print("No unread emails found.")
         return
 
-    parsed_email = parse_rfc822(raw_email)
-    classification_result = classify_email(parsed_email["body"])
-    result = {
-        "email": parsed_email,
-        "classification": classification_result
-    }
-    store_email_classification(result)
+    print(f"Fetched {len(raw_emails)} unread emails")
+
+    for idx, raw_email in enumerate(raw_emails, start=1):
+        print("=" * 80)
+
+        parsed = parse_rfc822(raw_email)
+
+        print(f"{idx:02d}")
+        print(f"FROM    : {parsed.get('from')}")
+        print(f"SUBJECT : {parsed.get('subject')}")
+        print(f"DATE    : {parsed.get('date')}")
+        print(f"BODY LEN: {len(parsed.get('body', ''))}")
+        print("Calling Ollama...")
+
+        try:
+            classification_json = classify_email(parsed["body"])
+        except Exception as e:
+            print("❌ Classification failed")
+            print(str(e))
+            classification_json = None
+
+        record = {
+            "email": parsed,
+            "classification": classification_json,
+        }
+
+        store_email_classification(record)
+
+        print("CLASSIFICATION:")
+        print(classification_json)
+
+    print("\nAll emails processed.")
+
+
+def main():
+    process_all_emails()
+
+
+if __name__ == "__main__":
+    main()

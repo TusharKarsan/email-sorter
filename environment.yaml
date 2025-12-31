@@ -3,18 +3,11 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12
-  - beautifulsoup4
-  - lxml # optional, faster parser for BeautifulSoup
-  - jupyterlab
-  - ipykernel
-  - numpy
-  - pandas
-  - matplotlib
-  - seaborn
-  - scikit-learn
-  - scipy
-  - statsmodels
   - pip
   - pip:
-      - jupyterlab-code-formatter
+      - openai
+      - beautifulsoup4
+      - lxml
       - black
+      - jupyterlab
+      - python-dotenv

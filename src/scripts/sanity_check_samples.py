@@ -1,4 +1,4 @@
-# src/scripts/sanity_check.py
+# src/scripts/sanity_check_samples.py
 import os
 from pathlib import Path
 from src.imap.parser import parse_rfc822
