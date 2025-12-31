@@ -26,16 +26,26 @@ def parse_rfc822(data):
 
     def get_text_content():
         text_content = ""
+
         for part in msg.walk():
             content_type = part.get_content_type()
+            payload = part.get_payload(decode=True)
+
+            if not payload:
+                continue
+
+            assert isinstance(payload, bytes)
+
             if content_type == "text/plain":
-                text_content = part.get_payload(decode=True).decode('utf-8', errors='ignore')
+                text_content = payload.decode("utf-8", errors="ignore")
                 break
+
             elif content_type == "text/html":
-                html_content = part.get_payload(decode=True).decode('utf-8', errors='ignore')
-                # Strip HTML tags
-                text_content = re.sub(r'<[^>]+>', '', html_content)
+                html_content = payload.decode("utf-8", errors="ignore")
+                text_content = re.sub(r"<[^>]+>", "", html_content)
+
         return text_content
+        
 
     return {
         "from": decode_header_value(msg.get("From", "")),
