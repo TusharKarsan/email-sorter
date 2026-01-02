@@ -5,6 +5,7 @@
   "jupyter.jupyterServerType": "local",
   "jupyter.askForKernelRestart": false,
   "jupyter.notebookFileRoot": "${workspaceFolder}/notebooks",
+  "jupyter.interactiveWindow.creationMode": "perFile",
 
   "python.analysis.typeCheckingMode": "basic",
   "python.formatting.provider": "black",
@@ -15,9 +16,16 @@
     "**/.ipynb_checkpoints": true,
     "**/__pycache__": true
   },
+
   "search.exclude": {
     "**/.ipynb_checkpoints": true,
     "**/__pycache__": true
   },
-  "jupyter.interactiveWindow.creationMode": "perFile"
+ 
+  "continue.enableTelemetry": false,
+  "continue.model": "Coder Agent (Qwen 3 Coder)",
+  "continue.experimental.inlineCompletionProvider": "continue",
+
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggest.showInlineDetails": true
 }
