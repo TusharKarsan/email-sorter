@@ -1,0 +1,49 @@
+# Build artifacts
+dist/
+build/
+out/
+target/
+*.egg-info/
+
+# Dependencies
+node_modules/
+venv/
+.env/
+.env.*
+
+# Binary / large files
+*.exe
+*.dll
+*.bin
+*.iso
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp4
+*.zip
+*.tar
+*.gz
+
+# Logs
+*.log
+
+# IDE noise
+.vscode/
+.idea/
+*.iml
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Git
+.git/
+.gitignore
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Continue internal
+.continue/
