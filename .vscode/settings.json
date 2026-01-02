@@ -1,15 +1,14 @@
 {
   "python.defaultInterpreterPath": "C:\\Users\\Tusha\\miniforge3\\envs\\email-sort-env\\python.exe",
   "python.terminal.activateEnvironment": true,
-
+  "python.analysis.typeCheckingMode": "basic",
+  "python.formatting.provider": "black",
+  
   "jupyter.jupyterServerType": "local",
   "jupyter.askForKernelRestart": false,
   "jupyter.notebookFileRoot": "${workspaceFolder}/notebooks",
   "jupyter.interactiveWindow.creationMode": "perFile",
 
-  "python.analysis.typeCheckingMode": "basic",
-  "python.formatting.provider": "black",
-  "editor.formatOnSave": true,
   "notebook.formatOnSave.enabled": true,
 
   "files.exclude": {
@@ -26,6 +25,7 @@
   "continue.model": "Coder Agent (Qwen 3 Coder)",
   "continue.experimental.inlineCompletionProvider": "continue",
 
+  "editor.formatOnSave": true,
   "editor.inlineSuggest.enabled": true,
   "editor.suggest.showInlineDetails": true
 }
