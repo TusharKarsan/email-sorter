@@ -9,5 +9,8 @@ dependencies:
       - beautifulsoup4
       - lxml
       - black
+      - marimo
       - jupyterlab
+      - notebook
+      - ipykernel
       - python-dotenv
