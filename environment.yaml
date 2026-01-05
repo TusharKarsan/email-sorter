@@ -14,3 +14,7 @@ dependencies:
       - notebook
       - ipykernel
       - python-dotenv
+      - numpy
+      - pandas
+      - matplotlib
+      - seaborn
