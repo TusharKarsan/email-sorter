@@ -1,6 +1,7 @@
 {
   "python.defaultInterpreterPath": "C:\\Users\\Tusha\\miniforge3\\envs\\email-sort-env\\python.exe",
   "python.terminal.activateEnvironment": true,
+  "python.analysis.autoImportCompletions": true,
   "python.analysis.typeCheckingMode": "basic",
   "python.formatting.provider": "black",
   
@@ -8,6 +9,8 @@
   "jupyter.askForKernelRestart": false,
   "jupyter.notebookFileRoot": "${workspaceFolder}/notebooks",
   "jupyter.interactiveWindow.creationMode": "perFile",
+
+  "marimo.autoStartServer": true,
 
   "notebook.formatOnSave.enabled": true,
 
