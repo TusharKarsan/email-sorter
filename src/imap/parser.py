@@ -20,7 +20,9 @@ Usage Context for Qwen 3 Coder:
 - Safe to enhance parsing (e.g., attachments, HTML fallback) but must maintain the returned dict structure
 """
 
+from datetime import datetime
 from email import message_from_bytes
+from email.utils import parsedate_to_datetime
 from bs4 import BeautifulSoup
 
 def parse_rfc822(raw_bytes: bytes) -> dict:
@@ -30,6 +32,7 @@ def parse_rfc822(raw_bytes: bytes) -> dict:
     from_ = msg.get("from", "")
     to = msg.get("to", "")
     date = msg.get("date", "")
+    dateTime = parsedate_to_datetime(date).astimezone()
 
     # Extract body (prefer plain text, fallback to HTML)
     body = ""
@@ -55,6 +58,6 @@ def parse_rfc822(raw_bytes: bytes) -> dict:
         "subject": subject,
         "from": from_,
         "to": to,
-        "date": date,
+        "date": dateTime.strftime("%Y-%m-%d %H:%M"), # dateTime.isoformat()
         "body": body.strip()
     }

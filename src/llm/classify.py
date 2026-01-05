@@ -22,8 +22,11 @@ Usage Context for Qwen 3 Coder:
 """
 
 import asyncio, json, os
+from dotenv import load_dotenv
 from openai import OpenAI
 from typing import List
+
+load_dotenv()
 
 base_url = os.environ.get("OLLAMA_BASE_URL")
 api_key = os.environ.get("OLLAMA_API_KEY")
