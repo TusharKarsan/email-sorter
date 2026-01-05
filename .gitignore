@@ -40,8 +40,9 @@ emails_classified.json
 # -----------------------------
 .vscode/
 !.vscode/
-!.vscode/settings.json
+!.vscode/extensions.json
 !.vscode/launch.json
+!.vscode/settings.json
 !.vscode/tasks.json
 
 # -----------------------------

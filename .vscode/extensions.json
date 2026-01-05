@@ -1,7 +1,7 @@
 {
   "recommendations": [
     "continue.continue",
+    "marimo-team.marimo-vscode",
     "ms-python.python",
-    "ms-vscode.vscode-typescript-next"
   ]
 }
