@@ -18,20 +18,32 @@ Usage Context for Qwen 3 Coder:
 - Safe to implement file locking or error handling for concurrent writes
 """
 
+from datetime import datetime
 import json
 import os
 
-STORE_FILE = "emails_classified.json"
+__filename = None
+
+def __init_state():
+    global __filename
+    if __filename is None:
+        now = datetime.now().strftime("%Y%m%d %H%M")
+        __filename = f"data/results/results {now}.json"
+    return __filename
+
 
 def store_email_classification(data: dict) -> None:
     """Append a single email classification result to the JSON store."""
+
+    filename = __init_state()
+
     # Ensure file exists
-    if not os.path.exists(STORE_FILE):
-        with open(STORE_FILE, "w", encoding="utf-8") as f:
+    if not os.path.exists(filename):
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump([], f, indent=2)
 
     # Read existing data
-    with open(STORE_FILE, "r", encoding="utf-8") as f:
+    with open(filename, "r", encoding="utf-8") as f:
         try:
             existing_data = json.load(f)
         except json.JSONDecodeError:
@@ -41,5 +53,5 @@ def store_email_classification(data: dict) -> None:
     existing_data.append(data)
 
     # Write back
-    with open(STORE_FILE, "w", encoding="utf-8") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         json.dump(existing_data, f, indent=2)

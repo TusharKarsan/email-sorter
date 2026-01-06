@@ -17,14 +17,18 @@ See also:
 - src.storage.json_store.store_email_classification
 """
 
-import os
 from dotenv import load_dotenv
+from pathlib import Path
+import os
+import sys
+
+# Add parent directory to path so src modules can be imported
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.imap.client import fetch_all_unread_emails
 from src.imap.parser import parse_rfc822
 from src.llm.classify import classify_email
 from src.storage.json_store import store_email_classification
-
 
 def process_all_emails():
     load_dotenv()

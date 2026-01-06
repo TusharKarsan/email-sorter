@@ -21,7 +21,9 @@ from datetime import datetime, timedelta
 load_dotenv()
 DEFAULT_FOLDER = os.environ.get("EMAIL_FOLDER", "INBOX")  # Gmail requires uppercase INBOX
 
-def fetch_unread_email(host, port, username, password, folder=None, since_days=30):
+SINCE_DAYS = 30  # Only fetch emails from last 45 days to limit volume
+
+def fetch_unread_email(host, port, username, password, folder=None, since_days=SINCE_DAYS):
     """Fetch one unread email from folder, optionally only from last `since_days` days."""
     folder = folder or DEFAULT_FOLDER
     context = ssl.create_default_context()
@@ -50,7 +52,7 @@ def fetch_unread_email(host, port, username, password, folder=None, since_days=3
         return msg[0][1]
 
 
-def fetch_all_unread_emails(host, port, username, password, folder=None, since_days=30):
+def fetch_all_unread_emails(host, port, username, password, folder=None, since_days=SINCE_DAYS):
     """Fetch all unread emails from folder, optionally only from last `since_days` days."""
     folder = folder or DEFAULT_FOLDER
     context = ssl.create_default_context()

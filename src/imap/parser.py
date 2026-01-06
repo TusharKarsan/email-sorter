@@ -24,6 +24,8 @@ from datetime import datetime
 from email import message_from_bytes
 from email.utils import parsedate_to_datetime
 from bs4 import BeautifulSoup
+# import re
+# re.sub(r"\s+", " ", body.strip())
 
 def parse_rfc822(raw_bytes: bytes) -> dict:
     """Parse raw RFC822 email bytes and return structured dict with plain-text body."""
