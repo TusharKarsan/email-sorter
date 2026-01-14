@@ -23,7 +23,7 @@
     "**/.ipynb_checkpoints": true,
     "**/__pycache__": true
   },
- 
+
   "continue.enableTelemetry": false,
   "continue.model": "Coder Agent (Qwen 3 Coder)",
   "continue.experimental.inlineCompletionProvider": "continue",

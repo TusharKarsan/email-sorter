@@ -7,6 +7,27 @@
       "command": "marimo run notebooks/main.py",
       "group": "build",
       "problemMatcher": []
+    },
+    {
+      "label": "RAG: Index Codebase",
+      "type": "shell",
+      "command": "npm run rag:index",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "RAG: Query",
+      "type": "shell",
+      "command": "npm run rag:query",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "RAG: Watch",
+      "type": "shell",
+      "command": "npx chokidar \"src/**/*\" -c \"npm run rag:index\"",
+      "isBackground": true,
+      "problemMatcher": []
     }
   ]
 }

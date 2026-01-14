@@ -1,0 +1,29 @@
+{
+  "vectorDb": {
+    "provider": "qdrant",
+    "url": "http://design:6333",
+    "collection": "Continue.RAG",
+    "distance": "Cosine"
+  },
+  "embedModel": "Nomic Embed",
+  "rerankModel": "Qwen3 Reranker",
+  "chunkSize": 800,
+  "chunkOverlap": 200,
+  "fileGlobs": [
+    "**/*.ts",
+    "**/*.js",
+    "**/*.py",
+    "**/*.go",
+    "**/*.cs",
+    "**/*.md"
+  ],
+  "ignore": [
+    "node_modules/**",
+    ".git/**",
+    ".gitignore",
+    "dist/**",
+    "build/**",
+    "__pycache__/",
+    "*.pyc"
+  ]
+}
