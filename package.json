@@ -14,7 +14,7 @@
     "watch": "npx chokidar \"**/*.{py,ts,md}\" -c \"npm run index\" --ignore \".continue/**\" --delay 5000"
   },
   "devDependencies": {
-    "chokidar-cli": "^3.0.0",
-    "@types/node": "^25.0.8"
+    "@types/node": "^25.0.8",
+    "chokidar-cli": "^3.0.0"
   }
 }
