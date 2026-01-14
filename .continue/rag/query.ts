@@ -12,9 +12,11 @@ async function query() {
   // 1. Embed the query
   const res = await fetch(OLLAMA_URL, {
     method: 'POST',
-    body: JSON.stringify({ model: 'nomic-embed-text:latest', prompt: userQuery })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'nomic-embed-text:latest', prompt: userQuery, stream: false })
   });
-  const { embedding } = await res.json();
+  const json = await res.json();
+  const embedding = json.embedding || (json.embeddings && json.embeddings[0]);
 
   // 2. Search Qdrant
   const results = await client.search(COLLECTION_NAME, {

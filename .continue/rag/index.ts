@@ -11,10 +11,25 @@ const client = new QdrantClient({ url: QDRANT_URL });
 async function getEmbedding(text: string) {
   const res = await fetch(OLLAMA_URL, {
     method: 'POST',
-    body: JSON.stringify({ model: 'nomic-embed-text:latest', prompt: text })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+      model: 'nomic-embed-text:latest', 
+      prompt: text,
+      stream: false
+    })
   });
+
   const json = await res.json();
-  return json.embedding;
+  
+  // Ollama returns { "embedding": [...] } or { "embeddings": [[...]] }
+  // We handle both just in case
+  const vector = json.embedding || (json.embeddings && json.embeddings[0]);
+
+  if (!vector || vector.length === 0) {
+    throw new Error(`Ollama returned an empty embedding for text: ${text.substring(0, 30)}...`);
+  }
+  
+  return vector;
 }
 
 async function runIndex() {

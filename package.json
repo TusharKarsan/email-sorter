@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@qdrant/js-client-rest": "^1.12.0",
-    "tsx": "^4.19.0",
-    "typescript": "^5.0.0",
-    "glob": "^11.0.0"
+    "@qdrant/js-client-rest": "^1.16.2",
+    "glob": "^11.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.0.0"
   },
   "scripts": {
     "index": "tsx .continue/rag/index.ts",
     "query": "tsx .continue/rag/query.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.8"
   }
 }
