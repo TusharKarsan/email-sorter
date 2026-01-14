@@ -45,6 +45,26 @@ function chunkText(text: string, size: number = 2000): string[] {
 async function runIndex() {
   // Ensure collection exists (keep your existing check here...)
 
+  try {
+    // 1. Check if collection exists
+    const response = await client.getCollections();
+    const exists = response.collections.some((c) => c.name === COLLECTION_NAME);
+
+    if (!exists) {
+      console.log(`Collection '${COLLECTION_NAME}' not found. Creating...`);
+      await client.createCollection(COLLECTION_NAME, {
+        vectors: {
+          size: 768,        // Must be 768 for nomic-embed-text
+          distance: 'Cosine'
+        }
+      });
+      console.log(`Collection created successfully.`);
+    }
+  } catch (error: any) {
+    console.error("Could not connect to Qdrant or create collection:", error.message);
+    return; // Stop if we can't ensure the collection exists
+  }
+
   const files = await glob('**/*.{ts,py,js,md}', { 
     ignore: ['node_modules/**', '.continue/**', 'dist/**', 'build/**'] 
   });
