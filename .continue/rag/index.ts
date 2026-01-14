@@ -1,6 +1,7 @@
 import { QdrantClient } from '@qdrant/js-client-rest';
 import { glob } from 'glob';
 import fs from 'fs';
+import crypto from 'crypto';
 import path from 'path';
 
 const QDRANT_URL = 'http://design:6333';
@@ -9,95 +10,71 @@ const COLLECTION_NAME = path.basename(process.cwd());
 
 const client = new QdrantClient({ url: QDRANT_URL });
 
+// Helper: Consistent UUID for upserting (overwriting)
+function generateId(filePath: string, chunkIndex: number): string {
+  const seed = `${filePath}_${chunkIndex}`;
+  // Create a consistent UUID v5 using a fixed namespace UUID
+  const NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8'; // Standard DNS namespace
+  
+  // Alternatively, for a quick fix without extra libraries, 
+  // format your MD5 hash to look like a UUID:
+  const hash = crypto.createHash('md5').update(seed).digest('hex');
+  return [
+    hash.substring(0, 8),
+    hash.substring(8, 12),
+    hash.substring(12, 16),
+    hash.substring(16, 20),
+    hash.substring(20, 32)
+  ].join('-');
+}
+
 async function getEmbedding(text: string) {
   const res = await fetch(OLLAMA_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      model: 'nomic-embed-text:latest', 
-      prompt: text,
-      stream: false
-    })
+    body: JSON.stringify({ model: 'nomic-embed-text:latest', prompt: text, stream: false })
   });
-
   const json = await res.json();
-  
-  // Ollama returns { "embedding": [...] } or { "embeddings": [[...]] }
-  // We handle both just in case
   const vector = json.embedding || (json.embeddings && json.embeddings[0]);
-
-  if (!vector || vector.length === 0) {
-    throw new Error(`Ollama returned an empty embedding for text: ${text.substring(0, 30)}...`);
-  }
-  
+  if (!vector) throw new Error("Ollama returned empty embedding");
   return vector;
 }
 
-// Helper function to split text into manageable chunks
-function chunkText(text: string, size: number = 2000): string[] {
-  const chunks: string[] = [];
-  for (let i = 0; i < text.length; i += size) {
-    chunks.push(text.slice(i, i + size));
-  }
-  return chunks;
-}
-
 async function runIndex() {
-  // Ensure collection exists (keep your existing check here...)
-
-  try {
-    // 1. Check if collection exists
-    const response = await client.getCollections();
-    const exists = response.collections.some((c) => c.name === COLLECTION_NAME);
-
-    if (!exists) {
-      console.log(`Collection '${COLLECTION_NAME}' not found. Creating...`);
-      await client.createCollection(COLLECTION_NAME, {
-        vectors: {
-          size: 768,        // Must be 768 for nomic-embed-text
-          distance: 'Cosine'
-        }
-      });
-      console.log(`Collection created successfully.`);
-    }
-  } catch (error: any) {
-    console.error("Could not connect to Qdrant or create collection:", error.message);
-    return; // Stop if we can't ensure the collection exists
+  // 1. Ensure Collection exists
+  const collections = await client.getCollections();
+  if (!collections.collections.some(c => c.name === COLLECTION_NAME)) {
+    await client.createCollection(COLLECTION_NAME, {
+      vectors: { size: 768, distance: 'Cosine' }
+    });
   }
 
   const files = await glob('**/*.{ts,py,js,md}', { 
-    ignore: ['node_modules/**', '.continue/**', 'dist/**', 'build/**'] 
+    ignore: ['node_modules/**', '.continue/**', 'dist/**'] 
   });
-  
+
   for (const file of files) {
     const content = fs.readFileSync(file, 'utf-8');
-    
-    // Skip empty files
     if (!content.trim()) continue;
 
-    // Split large files into chunks
-    const chunks = chunkText(content);
-    
+    // 2. Clear old vectors for THIS specific file before re-indexing
+    await client.delete(COLLECTION_NAME, {
+      filter: { must: [{ key: "path", match: { value: file } }] }
+    });
+
+    // 3. Chunk and Upsert
+    const chunks = content.match(/[\s\S]{1,2000}/g) || [];
     for (let j = 0; j < chunks.length; j++) {
-      try {
-        const vector = await getEmbedding(chunks[j]);
-        
-        await client.upsert(COLLECTION_NAME, {
-          points: [{
-            id: Math.floor(Math.random() * 1e9),
-            vector,
-            payload: { 
-              path: file, 
-              content: chunks[j],
-              chunkIndex: j 
-            }
-          }]
-        });
-      } catch (err: any) {
-        console.error(`Failed to index chunk ${j} of ${file}:`, err.message);
-      }
+      const vector = await getEmbedding(chunks[j]);
+      await client.upsert(COLLECTION_NAME, {
+        points: [{
+          id: generateId(file, j),
+          vector,
+          payload: { path: file, content: chunks[j] }
+        }]
+      });
     }
-    console.log(`Indexed: ${file} (${chunks.length} chunks)`);
+    console.log(`Indexed: ${file}`);
   }
 }
 
