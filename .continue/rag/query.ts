@@ -1,92 +1,34 @@
-import { QdrantClient } from "@qdrant/js-client-rest";
-import { minimatch } from "minimatch";
+import { QdrantClient } from '@qdrant/js-client-rest';
 
-const config = require("./config.json");
+const QDRANT_URL = 'http://design:6333';
+const OLLAMA_URL = 'http://design:11434/api/embeddings';
+const COLLECTION_NAME = 'email-sorter-code';
 
-const client = new QdrantClient({ url: config.vectorDb.url });
+const client = new QdrantClient({ url: QDRANT_URL });
 
-async function embed(text: string) {
-  const response = await fetch("http://design:11434/api/embed", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "nomic-embed-text:latest",
-      input: [text],
-      stream: false
-    })
+async function query() {
+  const userQuery = process.argv[2]; // Continue passes query as first arg
+  
+  // 1. Embed the query
+  const res = await fetch(OLLAMA_URL, {
+    method: 'POST',
+    body: JSON.stringify({ model: 'nomic-embed-text:latest', prompt: userQuery })
+  });
+  const { embedding } = await res.json();
+
+  // 2. Search Qdrant
+  const results = await client.search(COLLECTION_NAME, {
+    vector: embedding,
+    limit: 3,
+    with_payload: true
   });
 
-  const json = await response.json();
-  return json.embeddings[0];
+  // 3. Format for Continue.dev
+  const context = results.map(r => (
+    `File: ${r.payload?.path}\n\n${r.payload?.content}`
+  )).join('\n---\n');
+
+  process.stdout.write(context);
 }
 
-async function rerank(query: string, docs: any[]) {
-  const response = await fetch("http://design:11434/api/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "dengcao/Qwen3-Reranker-8B:Q8_0",
-      prompt: buildRerankPrompt(query, docs),
-      stream: false
-    })
-  });
-
-  const json = await response.json();
-  return JSON.parse(json.response);
-}
-
-function buildRerankPrompt(query: string, docs: any[]) {
-  const items = docs
-    .map((d, i) => `Document ${i}:\n${d.payload.text}`)
-    .join("\n\n");
-
-  return `
-Rank the following documents by relevance to the query.
-
-Query:
-
-\`\`\`text
-${query}
-\`\`\`
-
-Documents:
-
-\`\`\`text
-${items}
-\`\`\`
-
-Return ONLY a JSON array of document indices.
-  `.trim();
-}
-
-export async function retrieve(query: string) {
-  console.log("STEP 1: embedding query...");
-  const vector = await embed(query);
-  console.log("STEP 1 DONE");
-
-  console.log("STEP 2: searching Qdrant...");
-  const search = await client.search(config.vectorDb.collection, {
-    vector,
-    limit: 20
-  });
-  console.log("STEP 2 DONE");
-
-  if (!search || !Array.isArray(search) || search.length === 0) {
-    console.log("No results from Qdrant");
-    return [];
-  }
-
-  console.log(search);
-  console.log("STEP 3: reranking...");
-  const reranked = await rerank(query, search);
-  console.log("STEP 3 DONE");
-
-  return reranked.slice(0, 5).map((i: number) => {
-    const item = search[i];
-    if (!item || !item.payload) return null;
-    return {
-      file: item.payload.file,
-      text: item.payload.text
-    };
-  });
-}
+query();

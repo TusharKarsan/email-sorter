@@ -29,6 +29,13 @@ context:
   - provider: codebase
   - provider: file
   - provider: terminal
+  - provider: custom
+    name: qdrant-rag
+    params:
+      displayName: "Qdrant RAG (Design PC)"
+      description: "Custom RAG using Qdrant on Design PC"
+      indexCommand: "tsx .continue/rag/index.ts"
+      queryCommand: "tsx .continue/rag/query.ts"
 
 # --- MCP Servers (The Bridge to Qdrant) ---
 mcpServers:

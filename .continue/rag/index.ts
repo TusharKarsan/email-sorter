@@ -1,141 +1,47 @@
-import fs from "fs";
-import path from "path";
-import crypto from "crypto";
-import { QdrantClient } from "@qdrant/js-client-rest";
-import { minimatch } from "minimatch";
+import { QdrantClient } from '@qdrant/js-client-rest';
+import { glob } from 'glob';
+import fs from 'fs';
 
-const config = require("./config.json");
+const QDRANT_URL = 'http://design:6333';
+const OLLAMA_URL = 'http://design:11434/api/embeddings';
+const COLLECTION_NAME = 'email-sorter-code';
 
-const client = new QdrantClient({ url: config.vectorDb.url });
+const client = new QdrantClient({ url: QDRANT_URL });
 
-function normalize(p: string) {
-  return p.replace(/\\/g, "/");
+async function getEmbedding(text: string) {
+  const res = await fetch(OLLAMA_URL, {
+    method: 'POST',
+    body: JSON.stringify({ model: 'nomic-embed-text:latest', prompt: text })
+  });
+  const json = await res.json();
+  return json.embedding;
 }
 
-async function ensureCollection() {
-  try {
-    await client.getCollection(config.vectorDb.collection);
-    console.log("Collection exists:", config.vectorDb.collection);
-  } catch {
-    console.log("Creating collection:", config.vectorDb.collection);
-
-    await client.createCollection(config.vectorDb.collection, {
-      vectors: {
-        size: 768,
-        distance: "Cosine"
-      }
+async function runIndex() {
+  // Ensure collection exists
+  const collections = await client.getCollections();
+  if (!collections.collections.some(c => c.name === COLLECTION_NAME)) {
+    await client.createCollection(COLLECTION_NAME, {
+      vectors: { size: 768, distance: 'Cosine' } // Nomic uses 768 dims
     });
   }
-}
 
-async function embed(text: string) {
-  const response = await fetch("http://design:11434/api/embed", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "nomic-embed-text:latest",
-      input: [text],
-      stream: false
-    })
-  });
-
-  const json = await response.json();
-
-  if (!json.embeddings || json.embeddings.length === 0) {
-    throw new Error("Embedding failed: empty vector");
-  }
-
-  return json.embeddings[0];
-}
-
-function chunk(text: string, size: number, overlap: number) {
-  const chunks = [];
-  let i = 0;
-  while (i < text.length) {
-    chunks.push(text.slice(i, i + size));
-    i += size - overlap;
-  }
-  return chunks;
-}
-
-async function indexFile(filePath: string) {
-  const norm = normalize(filePath);
-
-  // 1. Delete old vectors for this file
-  await client.delete(config.vectorDb.collection, {
-    filter: {
-      must: [
-        {
-          key: "file",
-          match: { value: norm }
-        }
-      ]
-    }
-  });
-
-  // 2. Read and chunk file
-  const text = fs.readFileSync(filePath, "utf8");
-  const chunks = chunk(text, config.chunkSize, config.chunkOverlap);
-
-  // 3. Embed and upsert
-  for (const chunkText of chunks) {
-    const vector = await embed(chunkText);
-
-    await client.upsert(config.vectorDb.collection, {
-      points: [
-        {
-          id: crypto.randomUUID(),
-          vector,
-          payload: {
-            file: norm,
-            text: chunkText
-          }
-        }
-      ]
+  const files = await glob('**/*.{ts,py,js,md}', { ignore: ['node_modules/**', '.continue/**'] });
+  
+  for (const file of files) {
+    const content = fs.readFileSync(file, 'utf-8');
+    // Basic chunking: one chunk per file for email-sorter logic
+    const vector = await getEmbedding(content);
+    
+    await client.upsert(COLLECTION_NAME, {
+      points: [{
+        id: Math.floor(Math.random() * 1e9),
+        vector,
+        payload: { path: file, content }
+      }]
     });
+    console.log(`Indexed: ${file}`);
   }
 }
 
-function walk(dir: string, fileList: string[] = [], ignore: string[] = []) {
-  for (const file of fs.readdirSync(dir)) {
-    const full = path.join(dir, file);
-    const norm = normalize(full);
-
-    if (ignore.some(ig => minimatch(norm, ig))) {
-      continue;
-    }
-
-    if (fs.statSync(full).isDirectory()) {
-      walk(full, fileList, ignore);
-    } else {
-      fileList.push(full);
-    }
-  }
-  return fileList;
-}
-
-async function main() {
-  await ensureCollection();
-
-  const globs = config.fileGlobs;
-  const ignore = config.ignore || [];
-
-  const files = walk(path.join(process.cwd(), "src"), [], ignore);
-
-  const matched = files.filter(f => {
-    const norm = normalize(f);
-    return (
-      globs.some((g: string) => minimatch(norm, g)) &&
-      !ignore.some((ig: string) => minimatch(norm, ig))
-    );
-  });
-
-  for (const file of matched) {
-    console.log("Indexing:", file);
-    await indexFile(file);
-  }
-
-  console.log("Done.");
-}
-
-main();
+runIndex();
