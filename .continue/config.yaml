@@ -1,29 +1,45 @@
-rag:
-  provider: custom
-  indexCommand: "tsx .continue/rag/index.ts"
-  queryCommand: "tsx .continue/rag/query.ts"
+name: Ollama Local Config
+version: 1.0.0
+schema: v1
 
-vectorDb:
-  provider: qdrant
-  url: "http://design:6333"
-  collection: "Continue.RAG"
+# --- Models Configuration ---
+models:
+  - name: "Coder Agent (Qwen 3 Coder)"
+    provider: ollama
+    apiBase: http://design:11434
+    model: qwen3-coder:latest
+    roles: [chat, autocomplete, edit, apply]
+  
+  - name: "Nomic Embed"
+    provider: ollama
+    apiBase: http://design:11434
+    model: nomic-embed-text:latest
+    roles: [embed]
 
-embeddings:
-  model: "nomic-embed-text:latest"
+  - name: "Qwen3 Reranker"
+    provider: ollama
+    apiBase: http://design:11434
+    model: dengcao/Qwen3-Reranker-8B:Q8_0
+    roles: [rerank]
 
-fileGlobs:
-  - "src/**/*.ts"
-  - "src/**/*.js"
-  - "src/**/*.md"
-  - "src/**/*.py"
-  - "src/**/*.go"
-  - "src/**/*.cs"
+# --- Context Providers ---
+# Note: 'codebase' is the built-in RAG. 
+# For your custom Qdrant setup, we use an MCP server.
+context:
+  - provider: codebase
+  - provider: file
+  - provider: terminal
 
-ignore:
-  - "node_modules/**"
-  - ".git/**"
-  - ".gitignore"
-  - "dist/**"
-  - "build/**"
-  - "__pycache__/**"
-  - "*.pyc"
+# --- MCP Servers (The Bridge to Qdrant) ---
+mcpServers:
+  - name: "email-sorter-rag"
+    command: "python"
+    args: 
+      - "/path/to/your/qdrant_mcp_server.py" # You need to create this script
+    env:
+      QDRANT_URL: "http://design:6333"
+
+# --- Rules ---
+rules:
+  - "Use British English (optimise, centre) and quote prices in GBP (£)."
+  - "When providing diagrams, format responses for Obsidian using Mermaid diagrams."

@@ -34,7 +34,8 @@ async function embed(text: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "nomic-embed-text:latest",
-      input: [text]
+      input: [text],
+      stream: false
     })
   });
 

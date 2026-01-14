@@ -11,7 +11,8 @@ async function embed(text: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "nomic-embed-text:latest",
-      input: [text]
+      input: [text],
+      stream: false
     })
   });
 
@@ -25,7 +26,8 @@ async function rerank(query: string, docs: any[]) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "dengcao/Qwen3-Reranker-8B:Q8_0",
-      prompt: buildRerankPrompt(query, docs)
+      prompt: buildRerankPrompt(query, docs),
+      stream: false
     })
   });
 
@@ -42,28 +44,42 @@ function buildRerankPrompt(query: string, docs: any[]) {
 Rank the following documents by relevance to the query.
 
 Query:
+
+\`\`\`text
 ${query}
+\`\`\`
 
 Documents:
+
+\`\`\`text
 ${items}
+\`\`\`
 
 Return ONLY a JSON array of document indices.
   `.trim();
 }
 
 export async function retrieve(query: string) {
+  console.log("STEP 1: embedding query...");
   const vector = await embed(query);
+  console.log("STEP 1 DONE");
 
+  console.log("STEP 2: searching Qdrant...");
   const search = await client.search(config.vectorDb.collection, {
     vector,
     limit: 20
   });
+  console.log("STEP 2 DONE");
 
   if (!search || !Array.isArray(search) || search.length === 0) {
+    console.log("No results from Qdrant");
     return [];
   }
 
+  console.log(search);
+  console.log("STEP 3: reranking...");
   const reranked = await rerank(query, search);
+  console.log("STEP 3 DONE");
 
   return reranked.slice(0, 5).map((i: number) => {
     const item = search[i];
