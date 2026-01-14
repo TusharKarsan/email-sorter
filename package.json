@@ -10,9 +10,11 @@
   },
   "scripts": {
     "index": "tsx .continue/rag/index.ts",
-    "query": "tsx .continue/rag/query.ts"
+    "query": "tsx .continue/rag/query.ts",
+    "watch": "npx chokidar \"**/*.{py,ts,md}\" -c \"npm run index\" --ignore \".continue/**\""
   },
   "devDependencies": {
+    "chokidar-cli": "^3.0.0",
     "@types/node": "^25.0.8"
   }
 }
