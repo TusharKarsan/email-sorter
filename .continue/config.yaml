@@ -34,8 +34,8 @@ context:
     params:
       displayName: "Qdrant RAG (Design PC)"
       description: "Custom RAG using Qdrant on Design PC"
-      indexCommand: "tsx .continue/rag/index.ts"
-      queryCommand: "tsx .continue/rag/query.ts"
+      indexCommand: "npm run .continue/rag/index.ts"
+      queryCommand: "npm run .continue/rag/query.ts"
 
 # --- MCP Servers (The Bridge to Qdrant) ---
 mcpServers:
@@ -50,3 +50,5 @@ mcpServers:
 rules:
   - "Use British English (optimise, centre) and quote prices in GBP (£)."
   - "When providing diagrams, format responses for Obsidian using Mermaid diagrams."
+  - "For code snippets, use triple backticks with the appropriate language tag."
+  
