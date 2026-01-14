@@ -32,30 +32,51 @@ async function getEmbedding(text: string) {
   return vector;
 }
 
-async function runIndex() {
-  // Ensure collection exists
-  const collections = await client.getCollections();
-  if (!collections.collections.some(c => c.name === COLLECTION_NAME)) {
-    await client.createCollection(COLLECTION_NAME, {
-      vectors: { size: 768, distance: 'Cosine' } // Nomic uses 768 dims
-    });
+// Helper function to split text into manageable chunks
+function chunkText(text: string, size: number = 2000): string[] {
+  const chunks: string[] = [];
+  for (let i = 0; i < text.length; i += size) {
+    chunks.push(text.slice(i, i + size));
   }
+  return chunks;
+}
 
-  const files = await glob('**/*.{ts,py,js,md}', { ignore: ['node_modules/**', '.continue/**'] });
+async function runIndex() {
+  // Ensure collection exists (keep your existing check here...)
+
+  const files = await glob('**/*.{ts,py,js,md}', { 
+    ignore: ['node_modules/**', '.continue/**', 'dist/**', 'build/**'] 
+  });
   
   for (const file of files) {
     const content = fs.readFileSync(file, 'utf-8');
-    // Basic chunking: one chunk per file for email-sorter logic
-    const vector = await getEmbedding(content);
     
-    await client.upsert(COLLECTION_NAME, {
-      points: [{
-        id: Math.floor(Math.random() * 1e9),
-        vector,
-        payload: { path: file, content }
-      }]
-    });
-    console.log(`Indexed: ${file}`);
+    // Skip empty files
+    if (!content.trim()) continue;
+
+    // Split large files into chunks
+    const chunks = chunkText(content);
+    
+    for (let j = 0; j < chunks.length; j++) {
+      try {
+        const vector = await getEmbedding(chunks[j]);
+        
+        await client.upsert(COLLECTION_NAME, {
+          points: [{
+            id: Math.floor(Math.random() * 1e9),
+            vector,
+            payload: { 
+              path: file, 
+              content: chunks[j],
+              chunkIndex: j 
+            }
+          }]
+        });
+      } catch (err: any) {
+        console.error(`Failed to index chunk ${j} of ${file}:`, err.message);
+      }
+    }
+    console.log(`Indexed: ${file} (${chunks.length} chunks)`);
   }
 }
 
