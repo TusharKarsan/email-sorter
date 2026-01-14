@@ -1,10 +1,11 @@
 import { QdrantClient } from '@qdrant/js-client-rest';
 import { glob } from 'glob';
 import fs from 'fs';
+import path from 'path';
 
 const QDRANT_URL = 'http://design:6333';
 const OLLAMA_URL = 'http://design:11434/api/embeddings';
-const COLLECTION_NAME = 'email-sorter-code';
+const COLLECTION_NAME = path.basename(process.cwd());
 
 const client = new QdrantClient({ url: QDRANT_URL });
 
