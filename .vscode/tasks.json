@@ -25,7 +25,7 @@
     {
       "label": "RAG: Watch",
       "type": "shell",
-      "command": "npx chokidar \"**/*.{py,ts,md}\" -c \"npm run index\" --ignore \".continue/**\"",
+      "command": "npx chokidar '**/*.{py,ts,md}' -c 'npm run index' --ignore '.continue/**'",
       "isBackground": true,
       "runOptions": {
         "runOn": "folderOpen"
