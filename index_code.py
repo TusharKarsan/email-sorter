@@ -15,15 +15,17 @@ def main():
     print(f"📥 Loading embedding model: {MODEL_NAME}...")
     client.set_model(MODEL_NAME)
 
-    # 1. DELETE and RECREATE one last time to fix the name mismatch
-    print(f"♻️ Resetting collection with correct vector name: {VECTOR_NAME}")
-    client.delete_collection(COLLECTION_NAME)
-    client.create_collection(
-        collection_name=COLLECTION_NAME,
-        vectors_config={
-            VECTOR_NAME: models.VectorParams(size=768, distance=models.Distance.COSINE)
-        }
-    )
+    # 1. Ensure Collection exists (Safe mode)
+    if not client.collection_exists(COLLECTION_NAME):
+        print(f"🏗️ Creating collection {COLLECTION_NAME}...")
+        client.create_collection(
+            collection_name=COLLECTION_NAME,
+            vectors_config={
+                VECTOR_NAME: models.VectorParams(size=768, distance=models.Distance.COSINE)
+            }
+        )
+    else:
+        print(f"📚 Using existing collection {COLLECTION_NAME}...")
 
     # 2. Scan files
     documents = []
