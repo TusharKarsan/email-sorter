@@ -9,7 +9,8 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "index": "tsx .continue/rag/index.ts",
+    "index": "python index_code.py",
+    "index2": "tsx .continue/rag/index.ts",
     "query": "tsx .continue/rag/query.ts",
     "watch": "npx chokidar \"**/*.{py,ts,md}\" -c \"npm run index\" --ignore \".continue/**\" --delay 5000"
   },
