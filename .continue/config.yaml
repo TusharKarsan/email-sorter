@@ -36,22 +36,6 @@ context:
 #       QDRANT_URL: "http://design:6333"
 #       COLLECTION_NAME: "email-sorter"
 
-mcpServers:
-  - name: "qdrant-mcp"
-    type: "stdio"
-    command: "conda"
-    args:
-      - "run"
-      - "--no-capture-output"
-      - "-n"
-      - "email-sort-env" # Use your exact environment name
-      - "mcp-server-qdrant"
-      - "--transport"
-      - "stdio"
-    env:
-      QDRANT_URL: "http://design:6333"
-      COLLECTION_NAME: "email-sorter"
-
 # --- Rules ---
 rules:
   - "Use British English (optimise, centre) and quote prices in GBP (£)."
