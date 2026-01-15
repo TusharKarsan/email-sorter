@@ -6,28 +6,29 @@ from qdrant_client import QdrantClient, models
 QDRANT_URL = "http://design:6333"
 COLLECTION_NAME = "email-sorter"
 MODEL_NAME = "jinaai/jina-embeddings-v2-base-code"
+# This is the EXACT name the library is demanding in your error log:
+VECTOR_NAME = "fast-jina-embeddings-v2-base-code"
 
 def main():
     client = QdrantClient(url=QDRANT_URL)
     
-    # 1. Setup the model locally on Small_One
     print(f"📥 Loading embedding model: {MODEL_NAME}...")
     client.set_model(MODEL_NAME)
 
-    # 2. Ensure Collection exists (Does NOT delete existing data)
-    if not client.collection_exists(COLLECTION_NAME):
-        print(f"🏗️ Creating collection {COLLECTION_NAME}...")
-        client.create_collection(
-            collection_name=COLLECTION_NAME,
-            vectors_config=client.get_fastembed_vector_params() 
-        )
-    else:
-        print(f"📚 Using existing collection {COLLECTION_NAME}...")
+    # 1. DELETE and RECREATE one last time to fix the name mismatch
+    print(f"♻️ Resetting collection with correct vector name: {VECTOR_NAME}")
+    client.delete_collection(COLLECTION_NAME)
+    client.create_collection(
+        collection_name=COLLECTION_NAME,
+        vectors_config={
+            VECTOR_NAME: models.VectorParams(size=768, distance=models.Distance.COSINE)
+        }
+    )
 
-    # 3. Scan files
+    # 2. Scan files
     documents = []
     metadata = []
-    exclude_dirs = {'.git', '__pycache__', '.continue', '.venv', 'node_modules'}
+    exclude_dirs = {'.git', '__pycache__', '.continue', '.venv', 'node_modules', 'dist', 'build'}
 
     print(f"🔍 Scanning project...")
     for root, dirs, files in os.walk("."):
@@ -44,18 +45,18 @@ def main():
                 except Exception as e:
                     print(f"⚠️ Error reading {path}: {e}")
 
-    # 4. The Reliable Upload via Generator
+    # 3. Upload
     if documents:
-        print(f"🚀 Embedding and Uploading {len(documents)} items to Design PC...")
-        
-        # We use add() but wrap documents properly to let FastEmbed handle the 'embed' call internally
+        print(f"🚀 Uploading to Design PC...")
         client.add(
             collection_name=COLLECTION_NAME,
             documents=documents,
             metadata=metadata,
             ids=[str(uuid.uuid4()) for _ in range(len(documents))]
+            # We don't need to specify vector_name here; 
+            # client.add() will pick the Jina name automatically now.
         )
-        print("✅ Indexing complete! Your Agent is now fully synchronized.")
+        print("✅ Indexing complete!")
     else:
         print("❌ No files found.")
 
