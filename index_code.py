@@ -14,13 +14,15 @@ def main():
     print(f"📥 Loading embedding model: {MODEL_NAME}...")
     client.set_model(MODEL_NAME)
 
-    # 2. Explicitly Recreate Collection (Clean start)
-    print(f"♻️ Resetting collection {COLLECTION_NAME}...")
-    client.delete_collection(COLLECTION_NAME)
-    client.create_collection(
-        collection_name=COLLECTION_NAME,
-        vectors_config=client.get_fastembed_vector_params() 
-    )
+    # 2. Ensure Collection exists (Does NOT delete existing data)
+    if not client.collection_exists(COLLECTION_NAME):
+        print(f"🏗️ Creating collection {COLLECTION_NAME}...")
+        client.create_collection(
+            collection_name=COLLECTION_NAME,
+            vectors_config=client.get_fastembed_vector_params() 
+        )
+    else:
+        print(f"📚 Using existing collection {COLLECTION_NAME}...")
 
     # 3. Scan files
     documents = []
