@@ -44,3 +44,7 @@ rules:
   - "Stack: Miniforge/Conda and npm. Do not suggest Docker or Unix-specific paths."
   - "Architecture: Small_One (Local UK Workstation) <-> Design PC (Remote Server @ http://design:6333)."
   - "Source of Truth: Always prioritise @qdrant-mcp context over general programming knowledge for project-specific architecture."
+  - "NEVER attempt to run 'create_file' or 'edit_file' as terminal commands. Use the built-in IDE tools instead."
+  - "When using the terminal, always use PowerShell syntax. Use backticks (`) for line continuations and double quotes for paths with spaces."
+  - "If you need to create a file and the 'create_file' tool is failing, use the PowerShell 'New-Item' and 'Set-Content' commands instead."
+  - "Before writing any file, confirm the target directory 'D:/python/email-sorter/' exists."
