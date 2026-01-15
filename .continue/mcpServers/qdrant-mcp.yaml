@@ -25,3 +25,4 @@ mcpServers:
     env:
       QDRANT_URL: "http://design:6333"
       COLLECTION_NAME: "email-sorter"
+      VECTOR_NAME: "fast-jina-embeddings-v2-base-code"
