@@ -28,10 +28,26 @@ context:
   - provider: terminal
 
 # --- MCP Servers ---
+# mcpServers:
+#   - name: "qdrant-mcp"
+#     type: "stdio"
+#     command: "C:/Users/Tusha/miniforge3/envs/email-sort-env/Scripts/mcp-server-qdrant.exe"
+#     env:
+#       QDRANT_URL: "http://design:6333"
+#       COLLECTION_NAME: "email-sorter"
+
 mcpServers:
   - name: "qdrant-mcp"
     type: "stdio"
-    command: "C:/Users/Tusha/miniforge3/envs/email-sort-env/Scripts/mcp-server-qdrant.exe"
+    command: "conda"
+    args:
+      - "run"
+      - "--no-capture-output"
+      - "-n"
+      - "email-sort-env" # Use your exact environment name
+      - "mcp-server-qdrant"
+      - "--transport"
+      - "stdio"
     env:
       QDRANT_URL: "http://design:6333"
       COLLECTION_NAME: "email-sorter"
