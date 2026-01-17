@@ -3,12 +3,12 @@
         "architect": {
             "provider": "custom",
             "url": "http://design:11434/api/generate",
-            "model": "llama3.1:latest"
+            "model": "chevalblanc/gpt-4o-mini:latest"
         },
         "orchestrator": {
             "provider": "custom",
             "url": "http://design:11434/api/generate",
-            "model": "llama3.1:latest"
+            "model": "chevalblanc/gpt-4o-mini:latest"
         },
         "code": {
             "provider": "custom",
@@ -18,7 +18,7 @@
         "debug": {
             "provider": "custom",
             "url": "http://design:11434/api/generate",
-            "model": "llama3.1:latest"
+            "model": "gemma3:latest"
         }
     }
 }

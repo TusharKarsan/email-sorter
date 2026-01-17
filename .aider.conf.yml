@@ -1,20 +1,27 @@
-model: ollama:qwen2.5-coder
+model: ollama:qwen3-coder:latest
+weak-model: ollama:gemma3:latest
+
 editor: code
 watch-files: true
 git: true
-auto-commit: true
+auto-commits: true
+subtree-only: true
+diff_context: 3
+
 prompts:
   default: |
     You are an expert programming assistant. Help the user with their coding tasks efficiently and accurately.
 
-include:
+files:
   - src/
   - notebooks/
   - pyproject.toml
   - environment.yml
 
-exclude:
+ignore:
   - data/
   - .continue/
   - .git/
   - .venv/
+
+message_file: prompts/rules.md
