@@ -1,0 +1,20 @@
+model: ollama:qwen2.5-coder
+editor: code
+watch-files: true
+git: true
+auto-commit: true
+prompts:
+  default: |
+    You are an expert programming assistant. Help the user with their coding tasks efficiently and accurately.
+
+include:
+  - src/
+  - notebooks/
+  - pyproject.toml
+  - environment.yml
+
+exclude:
+  - data/
+  - .continue/
+  - .git/
+  - .venv/
