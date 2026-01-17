@@ -1,0 +1,24 @@
+{
+    "models": {
+        "architect": {
+            "provider": "custom",
+            "url": "http://design:11434/api/generate",
+            "model": "llama3.1:latest"
+        },
+        "orchestrator": {
+            "provider": "custom",
+            "url": "http://design:11434/api/generate",
+            "model": "llama3.1:latest"
+        },
+        "code": {
+            "provider": "custom",
+            "url": "http://design:11434/api/generate",
+            "model": "qwen3-coder:latest"
+        },
+        "debug": {
+            "provider": "custom",
+            "url": "http://design:11434/api/generate",
+            "model": "llama3.1:latest"
+        }
+    }
+}

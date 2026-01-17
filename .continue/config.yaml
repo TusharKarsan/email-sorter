@@ -27,15 +27,6 @@ context:
   - provider: file
   - provider: terminal
 
-# --- MCP Servers ---
-# mcpServers:
-#   - name: "qdrant-mcp"
-#     type: "stdio"
-#     command: "C:/Users/Tusha/miniforge3/envs/email-sort-env/Scripts/mcp-server-qdrant.exe"
-#     env:
-#       QDRANT_URL: "http://design:6333"
-#       COLLECTION_NAME: "email-sorter"
-
 # --- Rules ---
 rules:
   - "Use British English (optimise, centre), distances in miles, fuel in gallons, temperature in Celsius, and quote prices in GBP (£)."
