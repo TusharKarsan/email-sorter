@@ -6,9 +6,9 @@ models:
   - name: "Coder Agent (Qwen Coder)"
     provider: ollama
     apiBase: http://design:11434
-    model: qwen3-coder:latest
+    model: qwen2.5-coder:latest
     roles: [chat, autocomplete, edit, apply]
-  
+
   - name: "Nomic Embed"
     provider: ollama
     apiBase: http://design:11434

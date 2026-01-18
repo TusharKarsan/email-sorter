@@ -13,7 +13,7 @@
         "code": {
             "provider": "custom",
             "url": "http://design:11434/api/generate",
-            "model": "qwen3-coder:latest"
+            "model": "qwen2.5-coder:latest"
         },
         "debug": {
             "provider": "custom",

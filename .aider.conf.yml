@@ -1,7 +1,7 @@
 # .aider.conf.yml for TusharKarsan/email-sorter
 
 # 1. Model Selection (Using your 30B Qwen3 MoE)
-model: ollama_chat/qwen3-coder:latest
+model: ollama_chat/qwen2.5-coder:latest
 
 # 2. Local Ollama Connection (Pointing to your 'design' host)
 openai-api-base: http://design:11434/v1
@@ -9,11 +9,13 @@ openai-api-key: "not-needed"
 
 # 3. Optimization for your 30B Model
 # Since Qwen3-Coder has a massive 256k context, we can be generous
-map-tokens: "2048"
+map-tokens: "4096"
 edit-format: whole
 
 # 4. UK & Obsidian Preferences
 dark-mode: true
-auto-commits: true
+
 # Suggested: This keeps your Git history clean while working
+auto-commits: true
 dirty-commits: false
+gitignore: false

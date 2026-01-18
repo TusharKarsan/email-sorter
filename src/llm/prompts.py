@@ -41,17 +41,20 @@ Return ONLY a valid JSON object in the following structure and nothing else:
 {{
   "category": "<one_of_the_allowed_categories>",
   "confidence": <number between 0 and 1>,
-  "rationale": "<brief explanation>",
+  "rationale": "<brief explanation without special or newlines characters>",
   "employer_or_recruiter": "<string or null>",
-  "job_title": "<string or null>"
+  "job_title": "<string or null if stated but do not guess>"
 }}
 
 CONDITIONAL RULE:
 - If the category is job_opportunity or not_relevant, the "details" object MUST still be present,
   but all of its fields MUST be null.
 
-EMAIL CONTENT:
+EMAIL BODY:
+
+```email
 {email_text}
+```
 
 Do NOT include any commentary or extra text. Only return the JSON object."""
 
