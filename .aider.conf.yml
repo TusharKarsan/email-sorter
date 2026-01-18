@@ -1,27 +1,30 @@
+model-settings:
+  api_base: http://design:11434/api/
 model: ollama:qwen3-coder:latest
 weak-model: ollama:gemma3:latest
 
 editor: code
 watch-files: true
-git: true
-auto-commits: true
-subtree-only: true
-diff_context: 3
+# git: true
+# auto-commits: true
+# subtree-only: true
+# diff_context: 3
+dark-mode: false
 
 prompts:
   default: |
     You are an expert programming assistant. Help the user with their coding tasks efficiently and accurately.
 
-files:
-  - src/
-  - notebooks/
-  - pyproject.toml
-  - environment.yml
+# files:
+#   - src/
+#   - notebooks/
+#   - pyproject.toml
+#   - environment.yml
 
-ignore:
-  - data/
-  - .continue/
-  - .git/
-  - .venv/
+# ignore:
+#   - data/
+#   - .continue/
+#   - .git/
+#   - .venv/
 
-message_file: prompts/rules.md
+# message_file: prompts/rules.md

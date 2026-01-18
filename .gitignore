@@ -11,7 +11,7 @@ __pycache__/
 *.log
 
 # Virtual environments (just in case)
-.env/
+.env
 .venv/
 venv/
 env/
@@ -101,3 +101,10 @@ yarn-error.log*
 pnpm-debug.log*
 dist/
 build/
+
+# -----------------------------
+# Aider
+# -----------------------------
+.aider.tags.cache.v4/
+.aider.chat.history.md
+.aider.input.history
