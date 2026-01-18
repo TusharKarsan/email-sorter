@@ -1,30 +1,26 @@
-model-settings:
-  api_base: http://design:11434/api/
+# Aider Configuration for Local Ollama Usage
+
+# Use the Qwen 2.5 Coder model (highly recommended for local coding)
+# If you prefer another model, change 'qwen2.5-coder' to your preferred Ollama tag
 model: ollama:qwen3-coder:latest
 weak-model: ollama:gemma3:latest
 
-editor: code
-watch-files: true
-# git: true
-# auto-commits: true
-# subtree-only: true
-# diff_context: 3
-dark-mode: false
+# Specify the local Ollama API endpoint
+openai-api-base: http://127.0.0.1:11434
 
-prompts:
-  default: |
-    You are an expert programming assistant. Help the user with their coding tasks efficiently and accurately.
+# Since we are local, we don't need an API key, but Aider requires a placeholder
+openai-api-key: "not-needed"
 
-# files:
-#   - src/
-#   - notebooks/
-#   - pyproject.toml
-#   - environment.yml
+# Performance and UI Preferences
+edit-format: whole
+stream: true
+dark-mode: true
+restore-chat-history: true
 
-# ignore:
-#   - data/
-#   - .continue/
-#   - .git/
-#   - .venv/
+# Git Settings
+auto-commits: true
+dirty-commits: false
 
-# message_file: prompts/rules.md
+# Suggested: Increase the context window for Ollama 
+# (Helps with larger files or design patterns)
+map-tokens: "4096"
