@@ -110,3 +110,16 @@ build/
 .aider.input.history
 .aider*
 !.aider.conf.yml
+
+# -----------------------------
+# OpenCode
+# -----------------------------
+.opencode/
+opencode_debug.log
+
+# -----------------------------
+# Indexing scripts
+# -----------------------------
+index_code_old.py
+index_code.py
+index_to_qdrant.py

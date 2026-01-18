@@ -1,0 +1,35 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "model": "qwen2.5-coder:latest",
+    "enabled_providers": [
+        "Ollama"
+    ],
+    "disabled_providers": [
+        "*"
+    ],
+    "provider": {
+        "Ollama": {
+            "options": {
+                "baseURL": "http://design:11434",
+                "apiKey": "ollama",
+                "timeout": 300000
+            },
+            "models": {
+                "qwen2.5-coder:latest": {
+                    "name": "qwen 2.5",
+                    "limit": {
+                        "context": 32768,
+                        "output": 4096
+                    }
+                },
+                "qwen3-coder:latest": {
+                    "name": "qwen 3.0",
+                    "limit": {
+                        "context": 32768,
+                        "output": 4096
+                    }
+                }
+            }
+        }
+    }
+}
