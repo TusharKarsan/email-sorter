@@ -1,26 +1,19 @@
-# Aider Configuration for Local Ollama Usage
+# .aider.conf.yml for TusharKarsan/email-sorter
 
-# Use the Qwen 2.5 Coder model (highly recommended for local coding)
-# If you prefer another model, change 'qwen2.5-coder' to your preferred Ollama tag
-model: ollama:qwen3-coder:latest
-weak-model: ollama:gemma3:latest
+# 1. Model Selection (Using your 30B Qwen3 MoE)
+model: ollama_chat/qwen3-coder:latest
 
-# Specify the local Ollama API endpoint
-openai-api-base: http://127.0.0.1:11434
-
-# Since we are local, we don't need an API key, but Aider requires a placeholder
+# 2. Local Ollama Connection (Pointing to your 'design' host)
+openai-api-base: http://design:11434/v1
 openai-api-key: "not-needed"
 
-# Performance and UI Preferences
+# 3. Optimization for your 30B Model
+# Since Qwen3-Coder has a massive 256k context, we can be generous
+map-tokens: "2048"
 edit-format: whole
-stream: true
+
+# 4. UK & Obsidian Preferences
 dark-mode: true
-restore-chat-history: true
-
-# Git Settings
 auto-commits: true
+# Suggested: This keeps your Git history clean while working
 dirty-commits: false
-
-# Suggested: Increase the context window for Ollama 
-# (Helps with larger files or design patterns)
-map-tokens: "4096"
