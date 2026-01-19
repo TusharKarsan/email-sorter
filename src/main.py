@@ -1,92 +1,59 @@
-# main.py
-"""
-Main entry point for the email sorter.
-
-Pipeline:
-1. Connect to IMAP
-2. Fetch unread emails
-3. Parse RFC822
-4. Classify each email via Ollama (sync)
-5. Store classification result
-6. Print visible progress/output
-
-See also:
-- src.imap.client.fetch_all_unread_emails
-- src.imap.parser.parse_rfc822
-- src.llm.classify.classify_email
-- src.storage.json_store.store_email_classification
-"""
-
-from dotenv import load_dotenv
-from pathlib import Path
-import os
 import sys
+import time
+from imap.client import EmailClient
+from llm.classify import classify_email
 
-# Add parent directory to path so src modules can be imported
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from src.imap.client import fetch_all_unread_emails
-from src.imap.parser import parse_rfc822
-from src.llm.classify import classify_email
-from src.storage.json_store import store_email_classification
+# Fix Windows terminal encoding for emojis/Unicode
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding='utf-8')
 
 def process_all_emails():
-    load_dotenv()
+    client = EmailClient()
+    
+    try:
+        print("Connecting to mail server...")
+        client.connect()
+        emails = client.fetch_unread()
+        
+        if not emails:
+            print("No new emails to process.")
+            return
 
-    host = os.environ.get("EMAIL_HOST")
-    port = int(os.environ.get("EMAIL_PORT", 993))
-    username = os.environ.get("EMAIL_USER")
-    password = os.environ.get("EMAIL_PASS")
+        print(f"Found {len(emails)} unread emails.\n")
 
-    if not all([host, username, password]):
-        raise RuntimeError(
-            "Missing EMAIL_HOST / EMAIL_USER / EMAIL_PASS in environment"
-        )
+        for msg in emails:
+            print("-" * 40)
+            print(f"FROM    : {msg['from']}")
+            print(f"SUBJECT : {msg['subject']}")
+            
+            print("Calling Ollama...")
+            # Classification logic
+            result = classify_email(msg["body"])
+            
+            category = result.get("category", "Unknown")
+            reason = result.get("reason", "No reason provided")
 
-    print("Connecting to IMAP...")
-    raw_emails = fetch_all_unread_emails(host, port, username, password)
+            if category == "Error":
+                print(f"❌ Classification failed: {reason}")
+            else:
+                print(f"✅ Category: {category}")
+                print(f"📝 Reason: {reason}")
+                
+                # Logic to move email could go here
+                # client.move_to_folder(msg['uid'], category)
 
-    if not raw_emails:
-        print("No unread emails found.")
-        return
-
-    print(f"Fetched {len(raw_emails)} unread emails")
-
-    for idx, raw_email in enumerate(raw_emails, start=1):
-        print("=" * 80)
-
-        parsed = parse_rfc822(raw_email)
-
-        print(f"{idx:02d}")
-        print(f"FROM    : {parsed.get('from')}")
-        print(f"SUBJECT : {parsed.get('subject')}")
-        print(f"DATE    : {parsed.get('date')}")
-        print(f"BODY LEN: {len(parsed.get('body', ''))}")
-        print("Calling Ollama...")
-
-        try:
-            classification_json = classify_email(parsed["body"])
-        except Exception as e:
-            print("❌ Classification failed")
-            print(str(e))
-            classification_json = None
-
-        record = {
-            "email": parsed,
-            "classification": classification_json,
-        }
-
-        store_email_classification(record)
-
-        print("CLASSIFICATION:")
-        print(classification_json)
-
-    print("\nAll emails processed.")
-
+    except Exception as e:
+        print(f"Critical error in main loop: {e}")
+    finally:
+        client.logout()
+        print("\nLogged out safely.")
 
 def main():
-    process_all_emails()
-
+    while True:
+        process_all_emails()
+        print("\nWaiting 5 minutes for next check...")
+        time.sleep(300)
 
 if __name__ == "__main__":
     main()
+    
