@@ -1,23 +1,29 @@
 # src/main.py
 
+import os
 import sys
 import time
-
-# Change these lines:
+from dotenv import load_dotenv
 from src.imap.client import EmailClient
 from src.llm.classify import classify_email
 
-# ... rest of your code
-
-# Fix Windows terminal encoding for emojis/Unicode
-if sys.platform == "win32":
-    sys.stdout.reconfigure(encoding='utf-8')
+# Load credentials from .env
+load_dotenv()
 
 def process_all_emails():
-    client = EmailClient()
+    # Retrieve credentials from environment
+    host = os.getenv("IMAP_HOST")
+    user = os.getenv("IMAP_USER")
+    password = os.getenv("IMAP_PASS")
+
+    if not all([host, user, password]):
+        print("❌ Error: Missing credentials in .env file")
+        return
+
+    # Pass the required arguments to the class
+    client = EmailClient(host, user, password)
     
     try:
-        print("Connecting to mail server...")
         client.connect()
         emails = client.fetch_unread()
         
