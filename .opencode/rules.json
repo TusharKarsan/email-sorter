@@ -1,0 +1,11 @@
+{
+    "rules": [
+        "Always use British English spelling (e.g., 'categorise' instead of 'categorize', 'colour' instead of 'color').",
+        "Format all technical explanations using Markdown.",
+        "When explaining logic or flows, prefer using Mermaid diagrams.",
+        "If providing SVG diagrams, ensure they are embedded directly in the markdown.",
+        "Quote all prices in GBP (£).",
+        "Use Celsius for any temperature-related logic.",
+        "Assume the user is using the Obsidian note-taking app."
+    ]
+}

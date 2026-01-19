@@ -115,6 +115,8 @@ build/
 # OpenCode
 # -----------------------------
 .opencode/
+!.opencode/
+!.opencode/rules.json
 opencode_debug.log
 
 # -----------------------------
