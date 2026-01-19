@@ -32,10 +32,17 @@ class EmailClient:
             print(f"❌ Connection failed: {e}")
             raise
 
-    def fetch_unread(self):
-        """Searches for UNSEEN emails and returns a list of message objects."""
-        self.mail.select("inbox")
-        # Search for all unread emails
+    def fetch_unread(self, folder_name="INBOX"):
+        """Searches for UNSEEN emails in a specific folder."""
+        print(f"🔍 Searching for unread emails in: {folder_name}...")
+        
+        # Select the specific folder from your .env
+        status, _ = self.mail.select(folder_name)
+        
+        if status != 'OK':
+            print(f"❌ Failed to select folder: {folder_name}. Defaulting to INBOX.")
+            self.mail.select("INBOX")
+
         status, response = self.mail.search(None, 'UNSEEN')
         
         if status != 'OK':
