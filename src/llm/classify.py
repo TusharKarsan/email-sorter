@@ -2,7 +2,7 @@ import json
 import requests
 
 OLLAMA_URL = "http://design:11434/api/generate"
-MODEL_NAME = "qwen3-coder:latest"
+MODEL_NAME = "qwen2.5-coder:latest"
 
 def classify_email(email_body):
     prompt = f"""
