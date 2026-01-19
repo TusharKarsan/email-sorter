@@ -1,7 +1,13 @@
+# src/main.py
+
 import sys
 import time
-from imap.client import EmailClient
-from llm.classify import classify_email
+
+# Change these lines:
+from src.imap.client import EmailClient
+from src.llm.classify import classify_email
+
+# ... rest of your code
 
 # Fix Windows terminal encoding for emojis/Unicode
 if sys.platform == "win32":
