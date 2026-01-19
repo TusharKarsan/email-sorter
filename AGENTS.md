@@ -8,7 +8,7 @@ This project runs across a dual-PC local network:
 - **Client (Small_One):** Development environment (Windows/Miniforge3).
 - **Server (design):** High-performance backend hosting Ollama and Qdrant.
   - **GPU:** NVIDIA GeForce RTX 3060 (12GB VRAM).
-  - **Models:** - `qwen2.5-coder:14b` (Primary reasoning/refactoring).
+  - **Models:** - `qwen-14b-agent:latest` (Primary reasoning/refactoring).
     - `qwen2.5-coder:7b` (Autocomplete/Quick tasks).
     - `bge-m3` (Embeddings for RAG).
 
@@ -28,6 +28,25 @@ This project runs across a dual-PC local network:
 2. **Error Handling:** Use the `@retry` decorator or manual retry logic for network-dependent functions.
 3. **Pathing:** Use `pathlib` for all file operations to ensure cross-platform compatibility between Windows and WSL.
 4. **Documentation:** Use Mermaid diagrams in Obsidian for any new logic flows.
+
+## Project Authority & Permissions
+- You are an autonomous system agent with full permission to manage this project.
+- You are authorized to use `edit` to modify `environment.yml`.
+- You are authorized to use `run_shell` to manage the environment and run tests.
+
+## Environment Management
+- **Tooling**: We use Miniforge/Conda.
+- **Sync Command**: After any change to `environment.yml`, always run:
+  `conda env update --file environment.yml --prune`
+- **Testing**: We use `pytest` and `pytest-mock`. All tests live in `tests/`.
+
+## Coding Standards
+- **Language**: Use **British English** for all comments and documentation (e.g., 'categorisation', 'synchronise').
+- **Testing Style**: Prefer `pytest` functional tests over `unittest` classes. Use `mocker` fixture from `pytest-mock` for all network/API calls.
+
+## Safety & Guardrails
+- Do not ask for permission to run `conda` or `pytest` commands.
+- If a shell command fails, read the error output and attempt to fix the configuration automatically.
 
 ## 🆘 Troubleshooting (Local AI)
 
