@@ -23,6 +23,20 @@ DEFAULT_FOLDER = os.environ.get("EMAIL_FOLDER", "INBOX")  # Gmail requires upper
 
 SINCE_DAYS = 30  # Only fetch emails from last 45 days to limit volume
 
+import imaplib
+
+class EmailClient:  # <--- Verify this name matches
+    def __init__(self, host, username, password):
+        self.host = host
+        self.username = username
+        self.password = password
+        self.connection = None
+
+    def connect(self):
+        self.connection = imaplib.IMAP4_SSL(self.host)
+        self.connection.login(self.username, self.password)
+        print(f"✅ Connected to {self.host}")
+        
 def fetch_unread_email(host, port, username, password, folder=None, since_days=SINCE_DAYS):
     """Fetch one unread email from folder, optionally only from last `since_days` days."""
     folder = folder or DEFAULT_FOLDER

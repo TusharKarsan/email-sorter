@@ -1,22 +1,13 @@
-name: email-sort-env
+name: email-sorter
 channels:
   - conda-forge
+  - defaults
 dependencies:
   - python=3.12
+  - pip
   - pip:
-    - mcp-server-qdrant
-    - qdrant-client
-    - fastembed  # This is what generates the actual "Search" vectors
-    - openai
-    - beautifulsoup4
-    - lxml
-    - black
-    - marimo
-    - jupyterlab
-    - notebook
-    - ipykernel
-    - python-dotenv
-    - numpy
-    - pandas
-    - matplotlib
-    - seaborn
+    - tenacity          # For the @retry logic
+    - requests          # For calling Ollama on 'design'
+    - python-dotenv     # For your IMAP credentials
+    - imbox             # Or your preferred IMAP library
+    - qdrant-client     # For future RAG work
