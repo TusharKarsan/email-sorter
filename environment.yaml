@@ -11,3 +11,7 @@ dependencies:
     - python-dotenv     # For your IMAP credentials
     - imbox             # Or your preferred IMAP library
     - qdrant-client     # For future RAG work
+    - pytest
+    - pytest-mock
+    - beautifulsoup4
+    - lxml

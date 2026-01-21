@@ -33,8 +33,11 @@ def parse_rfc822(raw_bytes: bytes) -> dict:
     subject = msg.get("subject", "")
     from_ = msg.get("from", "")
     to = msg.get("to", "")
-    date = msg.get("date", "")
-    dateTime = parsedate_to_datetime(date).astimezone()
+    date_str = msg.get("date", "")
+    try:
+        dateTime = parsedate_to_datetime(date_str).astimezone()
+    except (ValueError, TypeError):
+        dateTime = datetime.now().astimezone()
 
     # Extract body (prefer plain text, fallback to HTML)
     body = ""
@@ -46,7 +49,7 @@ def parse_rfc822(raw_bytes: bytes) -> dict:
                 body += part.get_payload(decode=True).decode(errors="ignore")
             elif content_type == "text/html" and not body:
                 html = part.get_payload(decode=True).decode(errors="ignore")
-                body += BeautifulSoup(html, "lxml").get_text()
+                body += BeautifulSoup(html, "lxml").get_text(separator='\n')
     else:
         content_type = msg.get_content_type()
         payload = msg.get_payload(decode=True)
@@ -54,7 +57,7 @@ def parse_rfc822(raw_bytes: bytes) -> dict:
             if content_type == "text/plain":
                 body = payload.decode(errors="ignore")
             elif content_type == "text/html":
-                body = BeautifulSoup(payload.decode(errors="ignore"), "lxml").get_text()
+                body = BeautifulSoup(payload.decode(errors="ignore"), "lxml").get_text(separator='\n')
 
     return {
         "subject": subject,

@@ -8,6 +8,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 # Import our local modules using the src. prefix
 from src.imap.client import EmailClient
 from src.llm.classify import classify_email
+from src.rules import classify_by_rule
 
 # 1. Force UTF-8 for Windows terminal to prevent Emoji/Special Char crashes
 if sys.platform == "win32":
@@ -60,13 +61,17 @@ def process_all_emails():
             print(f"🧐 Processing: {msg['subject']}...")
             
             try:
-                # This uses the tenacity retry logic defined in classify.py
-                result = classify_email(msg["body"])
+                # First, try to classify based on rules
+                result = classify_by_rule(msg['from'], msg['subject'])
                 
+                # If not classified by rules, use the LLM
+                if not result:
+                    result = classify_email(msg["body"])
+
                 category = result.get("category", "Unsorted")
                 reason = result.get("reason", "No reason provided")
                 
-                print(f"✅ Categorised as: {category}")
+                print(f"✅ Categorised as: {category} ({reason})")
                 
                 # Update our Obsidian Log
                 log_to_obsidian(msg["subject"], category, reason)
