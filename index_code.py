@@ -6,26 +6,18 @@ from qdrant_client import QdrantClient, models
 QDRANT_URL = "http://design:6333"
 COLLECTION_NAME = "email-sorter"
 MODEL_NAME = "jinaai/jina-embeddings-v2-base-code"
-# This is the EXACT name the library is demanding in your error log:
 VECTOR_NAME = "fast-jina-embeddings-v2-base-code"
+BATCH_SIZE = 1
 
 def main():
-    client = QdrantClient(url=QDRANT_URL)
+    client = QdrantClient(url=QDRANT_URL, timeout=60)
     
-    print(f"📥 Loading embedding model: {MODEL_NAME}...")
-    client.set_model(MODEL_NAME)
-
-    # 1. Ensure Collection exists (Safe mode)
-    if not client.collection_exists(COLLECTION_NAME):
-        print(f"🏗️ Creating collection {COLLECTION_NAME}...")
-        client.create_collection(
-            collection_name=COLLECTION_NAME,
-            vectors_config={
-                VECTOR_NAME: models.VectorParams(size=768, distance=models.Distance.COSINE)
-            }
-        )
-    else:
-        print(f"📚 Using existing collection {COLLECTION_NAME}...")
+    # 1. Ensure Collection exists
+    print(f"🏗️ Recreating collection {COLLECTION_NAME}...")
+    client.recreate_collection(
+        collection_name=COLLECTION_NAME,
+        vectors_config=client.get_fastembed_vector_params(),
+    )
 
     # 2. Scan files
     documents = []
@@ -54,9 +46,8 @@ def main():
             collection_name=COLLECTION_NAME,
             documents=documents,
             metadata=metadata,
-            ids=[str(uuid.uuid4()) for _ in range(len(documents))]
-            # We don't need to specify vector_name here; 
-            # client.add() will pick the Jina name automatically now.
+            ids=[str(uuid.uuid4()) for _ in range(len(documents))],
+            batch_size=BATCH_SIZE
         )
         print("✅ Indexing complete!")
     else:

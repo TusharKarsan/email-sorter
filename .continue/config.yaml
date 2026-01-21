@@ -5,23 +5,23 @@ version: 1.0.0
 models:
   - name: "Coder Agent (Qwen Coder)"
     provider: ollama
-    apiBase: http://design:11434
+    apiBase: http://design:11434/api
     model: qwen2.5-coder:latest
     roles: [chat, autocomplete, edit, apply]
 
   - name: "Nomic Embed"
     provider: ollama
-    apiBase: http://design:11434
+    apiBase: http://design:11434/api
     model: nomic-embed-text:latest
     roles: [embed]
 
   - name: "Qwen3 Reranker"
     provider: ollama
-    apiBase: http://design:11434
+    apiBase: http://design:11434/api
     model: dengcao/Qwen3-Reranker-8B:Q8_0
     roles: [rerank]
 
-    # --- Context Providers ---
+# --- Context Providers ---
 context:
   - provider: codebase
   - provider: file
@@ -29,13 +29,13 @@ context:
 
 # --- Rules ---
 rules:
-  - "Use British English (optimise, centre), distances in miles, fuel in gallons, temperature in Celsius, and quote prices in GBP (£)."
-  - "Format all documentation in Markdown for Obsidian, using Mermaid or SVG for diagrams."
-  - "Project root is 'D:/python/email-sorter/' on Small_One (Windows). Never use placeholders like /path/to/."
-  - "Stack: Miniforge/Conda and npm. Do not suggest Docker or Unix-specific paths."
-  - "Architecture: Small_One (Local UK Workstation) <-> Design PC (Remote Server @ http://design:6333)."
-  - "Source of Truth: Always prioritise @qdrant-mcp context over general programming knowledge for project-specific architecture."
-  - "NEVER attempt to run 'create_file' or 'edit_file' as terminal commands. Use the built-in IDE tools instead."
-  - "When using the terminal, always use PowerShell syntax. Use backticks (`) for line continuations and double quotes for paths with spaces."
-  - "If you need to create a file and the 'create_file' tool is failing, use the PowerShell 'New-Item' and 'Set-Content' commands instead."
-  - "Before writing any file, confirm the target directory 'D:/python/email-sorter/' exists."
+  - rule: "Use British English (optimise, centre), distances in miles, fuel in gallons, temperature in Celsius, and quote prices in GBP (£)."
+  - rule: "Format all documentation in Markdown for Obsidian, using Mermaid or SVG for diagrams."
+  - rule: "Project root is 'D:/python/email-sorter/' on Small_One (Windows). Never use placeholders like /path/to/."
+  - rule: "Stack: Miniforge/Conda and npm. Do not suggest Docker or Unix-specific paths."
+  - rule: "Architecture: Small_One (Local UK Workstation) <-> Design PC (Remote Server @ http://design:6333)."
+  - rule: "Source of Truth: Always prioritise @qdrant-mcp context over general programming knowledge for project-specific architecture."
+  - rule: "NEVER attempt to run 'create_file' or 'edit_file' as terminal commands. Use the built-in IDE tools instead."
+  - rule: "When using the terminal, always use PowerShell syntax. Use backticks (`) for line continuations and double quotes for paths with spaces."
+  - rule: "If you need to create a file and the 'create_file' tool is failing, use the PowerShell 'New-Item' and 'Set-Content' commands instead."
+  - rule: "Before writing any file, confirm the target directory 'D:/python/email-sorter/' exists."
