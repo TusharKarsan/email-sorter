@@ -122,6 +122,6 @@ opencode_debug.log
 # -----------------------------
 # Indexing scripts
 # -----------------------------
-index_code_old.py
-index_code.py
-index_to_qdrant.py
+# index_code_old.py
+# index_code.py
+# index_to_qdrant.py
