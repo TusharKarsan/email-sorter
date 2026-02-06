@@ -3,21 +3,27 @@ version: 1.0.0
 
 # --- Models Configuration ---
 models:
-  - name: "Coder Agent (Qwen Coder)"
+  - name: "Coder Agent (14B)"
     provider: ollama
-    apiBase: http://design:11434/api
-    model: qwen2.5-coder:latest
-    roles: [chat, autocomplete, edit, apply]
+    apiBase: http://design:11434
+    model: qwen2.5-coder:14b  # Upgraded from :latest for better logic
+    roles: [chat, edit, apply]
+
+  - name: "Fast Autocomplete"
+    provider: ollama
+    apiBase: http://design:11434
+    model: qwen2.5-coder:latest # Using 7B for faster typing response
+    roles: [autocomplete]
 
   - name: "Nomic Embed"
     provider: ollama
-    apiBase: http://design:11434/api
+    apiBase: http://design:11434
     model: nomic-embed-text:latest
     roles: [embed]
 
   - name: "Qwen3 Reranker"
     provider: ollama
-    apiBase: http://design:11434/api
+    apiBase: http://design:11434
     model: dengcao/Qwen3-Reranker-8B:Q8_0
     roles: [rerank]
 
