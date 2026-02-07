@@ -16,3 +16,4 @@ dependencies:
     - beautifulsoup4
     - lxml
     - fastembed         # Required by the watcher
+    - ollama

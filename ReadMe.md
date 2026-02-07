@@ -145,7 +145,58 @@ Add academic references here if the project is part of coursework or your disser
 - [ ] Exploratory analysis  
 - [ ] Modelling  
 - [ ] Evaluation  
-- [ ] Report writing  
+- [ ] Report writing
+
+---
+
+## Logic Flow 1
+
+```mermaid
+graph TD
+    subgraph Filesystem
+        EML[.eml files]
+    end
+
+    subgraph Scripts [Python: Ingestion]
+        Ingest[ingest_emails.py]
+    end
+
+    subgraph Extension [TypeScript: Continue RAG]
+        Index[index.ts]
+        Query[query.ts]
+    end
+
+    subgraph Remote [Design PC: AI Stack]
+        Q[Qdrant :6333]
+        O[Ollama :11434]
+    end
+
+    EML --> Ingest
+    Ingest -->|Get Embedding| O
+    Ingest -->|Store Vector + Payload| Q
+    
+    Query -->|Search Vector| Q
+    Q -->|Return Matches| Query
+    Query -->|Context for LLM| O
+    
+    style Ingest fill:#ffd,stroke:#333
+    style Query fill:#dfd,stroke:#333
+    style Q fill:#bbf,stroke:#333
+```
+
+## Logic Flow 2
+
+```mermaid
+graph TD
+    YAML[environment.yaml] -->|conda env update| Env[Conda Env: email-sorter]
+    Env -->|Provides| Libs[ollama, qdrant-client, bs4]
+    Watcher[Nodemon Watcher] -->|Triggers| CondaRun[conda run -n email-sorter]
+    CondaRun -->|Executes| Ingest[ingest_emails.py]
+    
+    style YAML fill:#f9f,stroke:#333
+    style Env fill:#bbf,stroke:#333
+    style Watcher fill:#f96,stroke:#333
+```
 
 ---
 
@@ -154,4 +205,3 @@ Add academic references here if the project is part of coursework or your disser
 Author: **Tushar Karsan**  
 GitHub: https://github.com/TusharKarsan  
 LinkedIn: https://www.linkedin.com/in/tusharkarsan/
-

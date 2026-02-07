@@ -9,10 +9,13 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "index": "conda activate email-sorter && python index_code.py",
-    "index2": "tsx .continue/rag/index.ts",
-    "query": "tsx .continue/rag/query.ts",
-    "watch": "npx chokidar \"**/*.{py,ts,md}\" -c \"npm run index\" --ignore \".continue/**\" --delay 5000"
+    "ingest": "conda run -n email-sorter python .continue/rag/ingest_emails.py",
+    "watch": "nodemon --delay 2.5 --watch D:/path/to/your/emails -e eml --exec \"npm run ingest\""
+    // Old scripts for reference:
+    // "index": "conda activate email-sorter && python index_code.py",
+    // "index2": "tsx .continue/rag/index.ts",
+    // "query": "tsx .continue/rag/query.ts",
+    // "watch": "npx chokidar \"**/*.{py,ts,md}\" -c \"npm run index\" --ignore \".continue/**\" --delay 5000"
   },
   "devDependencies": {
     "@types/node": "^25.0.8",

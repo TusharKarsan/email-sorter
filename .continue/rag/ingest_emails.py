@@ -1,3 +1,4 @@
+import hashlib
 import os
 import email
 from email import policy
@@ -56,13 +57,14 @@ def ingest_emails():
             # 1. Generate Embedding via Ollama on Design PC
             response = ollama.embeddings(model=EMBED_MODEL, prompt=body[:2000]) # Truncate to save context
             embedding = response['embedding']
+            file_hash = hashlib.md5(filename.encode()).hexdigest()
             
             # 2. Upsert into Qdrant
             qdrant.upsert(
                 collection_name=COLLECTION_NAME,
                 points=[
                     models.PointStruct(
-                        id=idx, # Simple incremental ID for now
+                        id=file_hash,
                         vector=embedding,
                         payload={
                             "filename": filename,
