@@ -9,8 +9,10 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
+    "env:sync": "conda env update --file environment.yaml --prune",
     "ingest": "conda run -n email-sorter python .continue/rag/ingest_emails.py",
     "watch": "nodemon --delay 2.5 --watch D:/path/to/your/emails -e eml --exec \"npm run ingest\""
+    // conda list -n email-sorter
     // Old scripts for reference:
     // "index": "conda activate email-sorter && python index_code.py",
     // "index2": "tsx .continue/rag/index.ts",
